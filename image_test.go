@@ -1738,6 +1738,41 @@ func TestImageSubImageSubImage(t *testing.T) {
 	}
 }
 
+func TestImageNonOriginSubImageSubImage(t *testing.T) {
+	img := ebiten.NewImage(16, 16)
+	img.Fill(color.White)
+	sub0 := img.SubImage(image.Rect(1, 1, 12, 12)).(*ebiten.Image)
+	sub1 := sub0.SubImage(image.Rect(4, 4, 16, 16)).(*ebiten.Image)
+	cases := []struct {
+		X     int
+		Y     int
+		Color color.RGBA
+	}{
+		{
+			X:     4,
+			Y:     4,
+			Color: color.RGBA{},
+		},
+		{
+			X:     5,
+			Y:     5,
+			Color: color.RGBA{R: 0xff, G: 0xff, B: 0xff, A: 0xff},
+		},
+		{
+			X:     15,
+			Y:     15,
+			Color: color.RGBA{},
+		},
+	}
+	for _, c := range cases {
+		got := sub1.At(c.X, c.Y)
+		want := c.Color
+		if got != want {
+			t.Errorf("At(%d, %d): got: %v, want: %v", c.X, c.Y, got, want)
+		}
+	}
+}
+
 // Issue #839
 func TestImageTooSmallMipmap(t *testing.T) {
 	const w, h = 16, 16

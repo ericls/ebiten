@@ -843,6 +843,10 @@ func (i *Image) SubImage(r image.Rectangle) image.Image {
 		return nil
 	}
 
+	if i.isSubImage() {
+		r = r.Add(i.bounds.Min)
+	}
+
 	r = r.Intersect(i.Bounds())
 	// Need to check Empty explicitly. See the standard image package implementations.
 	if r.Empty() {
